@@ -15,20 +15,41 @@ function App() {
   const runFacemesh = async()=>{
     const net = await facemesh.load({
       inputResolution:{width:640, height:480}, scale:0.8
-    })
-  }
+    });
+    setInterval(()=>{
+      detect(net)
+    }, 100)
+  };
 
   // Detecting Function
 
   const detect = async (net) =>{
     if(
       typeof webcamRef.current != "undefined" && 
-      webcamRef.current !==bull &&
-      webcamRef.current.video.readState ===4
+      webcamRef.current !==null &&
+      webcamRef.current.video.readyState ===4
     )
-  }
+    {
+      // Getting video properties
+      const video = webcamRef.current.video;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
+
+      //Setting video width
+
+      webcamRef.current.video.width = videoWidth;
+      webcamRef.current.video.height = videoHeight;
+
+      // Making detections
+
+      const face = await net.estimateFaces(video);
+      console.log(face);
 
 
+    }
+  };
+
+runFacemesh()
   return (
     <div className="App">
       <header className="App-header">
